@@ -21,23 +21,25 @@ client.on('interactionCreate', async interaction => {
 
 client.on('messageCreate', async message => {
     if(!message.content.startsWith("!") || message.author.bot) return;
-    const args = message.content.slice(1).split(" ");
+    var args = message.content.slice(1).split(" ");
     if(args[0] === 'recent') {
-        if(args.length > 2 || args.length === 1) {
-            message.reply('Invalid argument count... (!recent <summoner name>)');
-            return;
+        args.shift();
+        var summID;
+        if(args.length > 1) {
+            summID = args.join(' ');
         } else {
-            try {
-                const PUUID = await getPUUID(args[1]);
-                if(PUUID === null) {
-                    throw error;
-                }
-                const matchID = await getLoss(PUUID);
-                const res = await getMatch(matchID[0], PUUID);
-                message.reply(`${args[1]} went ${res.k}/${res.d}/${res.a} on ${res.champ}.`);
-            } catch (error) {
-                message.reply(`Summoner ${args[1]} not found...`);
+            summID = args[0];
+        }
+        try {
+            const PUUID = await getPUUID(summID);
+            if(PUUID === null) {
+                throw error;
             }
+            const matchID = await getLoss(PUUID);
+            const res = await getMatch(matchID[0], PUUID);
+            message.reply(`${summID} went ${res.k}/${res.d}/${res.a} on ${res.champ}.`);
+        } catch (error) {
+            message.reply(`Summoner ${summID} not found...`);
         }
     }
 })
