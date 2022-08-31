@@ -33,7 +33,8 @@ client.on('messageCreate', async message => {
         try {
             const [PUUID, iconID] = await getPUUID(summID);
             if(PUUID === null) {
-                throw error;
+                message.reply(`${backtick}Summoner ${summID} not found...${backtick}`);
+                return;
             }
             const matchID = await getMID(PUUID);
             const res = await getMatch(matchID[0], PUUID);
@@ -41,6 +42,10 @@ client.on('messageCreate', async message => {
             let urlSummID = summID;
             if(arr.length > 1) {
                 urlSummID = arr.join("%20");
+            }
+            if(res === null) {
+                message.reply(`${backtick}Summoner ${summID} not found...${backtick}`);
+                return;
             }
             if(res.won) {
                 const winEmbed = new EmbedBuilder()
